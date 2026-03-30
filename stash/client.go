@@ -22,36 +22,25 @@ type Client struct {
 type clientOption func(*Client) error
 
 func WithUser(username, password string) clientOption {
-	type request struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
-	type response struct {
-		Token string `json:"token"`
-	}
-	type errorMessage struct {
-		Message string `json:"message"`
-		Detail  string `json:"detail"`
-	}
 	return func(c *Client) error {
-		reqBody := request{
+		reqBody := GetTokenRequest{
 			Username: username,
 			Password: password,
 		}
 		bodyJson, _ := json.Marshal(reqBody)
 		reader := bytes.NewReader(bodyJson)
-		resp, err := c.post(context.Background(), "/api/v1/login", reader)
+		resp, err := c.post(context.Background(), "/api/v1/auth/login", reader)
 		if err != nil {
 			return err
 		}
 		if resp.StatusCode != http.StatusOK {
-			errResp, err := jsonutil.Read[errorMessage](resp.Body)
+			errResp, err := jsonutil.Read[jsonutil.Message](resp.Body)
 			if err != nil {
 				return err
 			}
-			return errors.New(errResp.Detail)
+			return errors.New(errResp.Detail.(string))
 		}
-		var respBody response
+		var respBody GetTokenResponse
 		err = json.NewDecoder(resp.Body).Decode(&respBody)
 		if err != nil {
 			return err

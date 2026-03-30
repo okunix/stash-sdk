@@ -5,8 +5,8 @@ import (
 )
 
 var (
-	username = "test"
-	password = "testpassword"
+	username = "yusuf"
+	password = "1234567890"
 )
 
 func TestNewClient(t *testing.T) {
@@ -33,7 +33,7 @@ func initClient(t *testing.T) *Client {
 func TestGetStashByID(t *testing.T) {
 	ctx := t.Context()
 	client := initClient(t)
-	st, err := client.GetStashByID(ctx, "1def6ac0-0c2d-4ad0-9db4-da0b04b5a214")
+	st, err := client.GetStashByID(ctx, "bac5ff60-4f9b-42af-9584-f77804f18357")
 	if err != nil {
 		t.Fatal(err.Error())
 		return
@@ -50,4 +50,15 @@ func TestListStashes(t *testing.T) {
 		return
 	}
 	t.Logf("stash: %+v\n", listStashesResponse)
+}
+
+func TestCreateStash(t *testing.T) {
+	ctx := t.Context()
+
+	client := initClient(t)
+	req := CreateStashRequest{Name: "test_stash", Password: "supersecretpass"}
+	if err := client.CreateStash(ctx, req); err != nil {
+		t.Fatal(err.Error())
+		return
+	}
 }
