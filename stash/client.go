@@ -123,6 +123,18 @@ func (c *Client) newRequest(
 	return req, err
 }
 
+func (c *Client) Ping(ctx context.Context) error {
+	resp, err := c.get(ctx, "/health")
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("Ping failed. Status code: %d", resp.StatusCode)
+	}
+	return nil
+}
+
 func (c *Client) get(ctx context.Context, path string) (*http.Response, error) {
 	return c.do(ctx, "GET", path, nil)
 }
