@@ -27,6 +27,7 @@ func (c *Client) GetToken(ctx context.Context, request GetTokenRequest) (*GetTok
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
 		return nil, jsonutil.ForgeError(resp.Body)
 	}
@@ -39,6 +40,7 @@ func (c *Client) Whoami(ctx context.Context) (*UserResponse, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
 		return nil, jsonutil.ForgeError(resp.Body)
 	}
@@ -53,6 +55,7 @@ func (c *Client) ChangePassword(ctx context.Context, request ChangePasswordReque
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return jsonutil.ForgeError(resp.Body)
 	}
@@ -71,6 +74,7 @@ func (c *Client) ListUsers(ctx context.Context, limit, offset uint) (*ListUsersR
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
 		return nil, jsonutil.ForgeError(resp.Body)
 	}
@@ -84,6 +88,7 @@ func (c *Client) GetUserByID(ctx context.Context, userID string) (*UserResponse,
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
 		return nil, jsonutil.ForgeError(resp.Body)
 	}
@@ -98,6 +103,7 @@ func (c *Client) CreateUser(ctx context.Context, request CreateUserRequest) erro
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusCreated {
 		return jsonutil.ForgeError(resp.Body)
 	}

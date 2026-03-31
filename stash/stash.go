@@ -42,6 +42,7 @@ func (c *Client) GetStashByID(ctx context.Context, id string) (*StashResponse, e
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
 		return nil, jsonutil.ForgeError(resp.Body)
 	}
@@ -64,6 +65,7 @@ func (c *Client) ListStashes(ctx context.Context, limit, offset uint) (*ListStas
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return nil, jsonutil.ForgeError(resp.Body)
 	}
@@ -78,6 +80,7 @@ func (c *Client) DeleteStash(ctx context.Context, stashID string) error {
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return jsonutil.ForgeError(resp.Body)
 	}
@@ -92,6 +95,7 @@ func (c *Client) CreateStash(ctx context.Context, request CreateStashRequest) er
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusCreated {
 		return jsonutil.ForgeError(resp.Body)
 	}
@@ -106,6 +110,7 @@ func (c *Client) UpdateStash(ctx context.Context, request UpdateStashRequest) er
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return jsonutil.ForgeError(resp.Body)
 	}
@@ -118,6 +123,7 @@ func (c *Client) Lock(ctx context.Context, stashID string) error {
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return jsonutil.ForgeError(resp.Body)
 	}
@@ -130,6 +136,7 @@ func (c *Client) Unlock(ctx context.Context, stashID, password string) error {
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return jsonutil.ForgeError(resp.Body)
 	}
@@ -142,6 +149,7 @@ func (c *Client) GetSecrets(ctx context.Context, stashID string) (*SecretRespons
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return nil, jsonutil.ForgeError(resp.Body)
 	}
@@ -155,6 +163,7 @@ func (c *Client) GetSecretsEntry(ctx context.Context, stashID, name string) (str
 	if err != nil {
 		return "", err
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return "", jsonutil.ForgeError(resp.Body)
 	}
@@ -173,6 +182,7 @@ func (c *Client) AddSecretsEntry(
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return jsonutil.ForgeError(resp.Body)
 	}
@@ -185,6 +195,7 @@ func (c *Client) RemoveSecretsEntry(ctx context.Context, stashID, name string) e
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return jsonutil.ForgeError(resp.Body)
 	}
@@ -200,6 +211,7 @@ func (c *Client) GetStashMembers(
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return nil, jsonutil.ForgeError(resp.Body)
 	}
@@ -214,6 +226,7 @@ func (c *Client) AddStashMember(ctx context.Context, stashID, userID string) err
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusCreated {
 		return jsonutil.ForgeError(resp.Body)
 	}
@@ -226,6 +239,7 @@ func (c *Client) RemoveStashMember(ctx context.Context, stashID, userID string) 
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return jsonutil.ForgeError(resp.Body)
 	}
