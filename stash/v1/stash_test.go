@@ -361,46 +361,46 @@ func TestGetStashByID_NotFound(t *testing.T) {
 
 func TestListStashes_Success(t *testing.T) {
 	now := time.Now().UTC().Truncate(time.Second)
-	resp := ListStashResponse{
-		Page: Page{Limit: 10, Offset: 0, Total: 2},
-		Result: []StashResponse{
-			{ID: "s-1", Name: "stash-a", MaintainerID: "u-1", CreatedAt: now},
-			{ID: "s-2", Name: "stash-b", MaintainerID: "u-1", CreatedAt: now},
+	resp := ListStashesResponse{
+		Member: []StashResponse{
+			{ID: "s-1", Name: "stash-a", MaintainerID: "u-2", CreatedAt: now},
+			{ID: "s-2", Name: "stash-b", MaintainerID: "u-2", CreatedAt: now},
+		},
+		Maintainer: []StashResponse{
+			{ID: "s-3", Name: "stash-c", MaintainerID: "u-1", CreatedAt: now},
+			{ID: "s-4", Name: "stash-d", MaintainerID: "u-1", CreatedAt: now},
 		},
 	}
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/v1/stashes", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Query().Get("limit") == "" {
-			t.Error("missing limit param")
-		}
 		jsonReply(w, http.StatusOK, mustJSON(t, resp))
 	})
 	c, _ := newTestClient(t, mux)
-	got, err := c.ListStashes(context.Background(), 10, 0)
+	got, err := c.ListStashes(context.Background())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if len(got.Result) != 2 {
-		t.Errorf("expected 2 stashes, got %d", len(got.Result))
+	if len(got.Maintainer) != 2 {
+		t.Errorf("expected 2 stashes, got %d", len(got.Maintainer))
 	}
 }
 
 func TestListStashes_EmptyResult(t *testing.T) {
-	resp := ListStashResponse{
-		Page:   Page{Limit: 10, Offset: 0, Total: 0},
-		Result: []StashResponse{},
+	resp := ListStashesResponse{
+		Member:     []StashResponse{},
+		Maintainer: []StashResponse{},
 	}
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/v1/stashes", func(w http.ResponseWriter, r *http.Request) {
 		jsonReply(w, http.StatusOK, mustJSON(t, resp))
 	})
 	c, _ := newTestClient(t, mux)
-	got, err := c.ListStashes(context.Background(), 10, 0)
+	got, err := c.ListStashes(context.Background())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if len(got.Result) != 0 {
-		t.Errorf("expected 0 stashes, got %d", len(got.Result))
+	if len(got.Maintainer) != 0 {
+		t.Errorf("expected 0 stashes, got %d", len(got.Maintainer))
 	}
 }
 
@@ -410,7 +410,7 @@ func TestListStashes_Unauthorized(t *testing.T) {
 		jsonReply(w, http.StatusUnauthorized, errorBody("unauthorized", "not authenticated"))
 	})
 	c, _ := newTestClient(t, mux)
-	_, err := c.ListStashes(context.Background(), 10, 0)
+	_, err := c.ListStashes(context.Background())
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}

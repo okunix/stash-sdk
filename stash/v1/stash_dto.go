@@ -13,11 +13,6 @@ type StashResponse struct {
 	Locked       bool      `json:"locked"`
 }
 
-type ListStashResponse struct {
-	Page   Page            `json:"page"`
-	Result []StashResponse `json:"result"`
-}
-
 type StashMemberResponse struct {
 	UserID   string    `json:"user_id"`
 	Username string    `json:"username"`
@@ -61,4 +56,9 @@ type AddSecretRequest struct {
 
 type UnlockStashRequest struct {
 	Password string `json:"password"`
+}
+
+type ListStashesResponse struct {
+	Maintainer []StashResponse `json:"maintainer"`
+	Member     []StashResponse `json:"member"`
 }

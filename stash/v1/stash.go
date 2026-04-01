@@ -13,7 +13,8 @@ import (
 
 type StashClient interface {
 	GetStashByID(ctx context.Context, id string) (*StashResponse, error)
-	ListStashes(ctx context.Context, limit, offset uint) (*ListStashResponse, error)
+	GetStashByName(ctx context.Context, maintainerID, name string) (*StashResponse, error)
+	ListStashes(ctx context.Context) (*ListStashesResponse, error)
 	DeleteStash(ctx context.Context, stashID string) error
 	CreateStash(ctx context.Context, request CreateStashRequest) error
 	UpdateStash(ctx context.Context, request UpdateStashRequest) error
@@ -50,18 +51,9 @@ func (c *Client) GetStashByID(ctx context.Context, id string) (*StashResponse, e
 	return &stashResponse, err
 }
 
-func (c *Client) ListStashes(ctx context.Context, limit, offset uint) (*ListStashResponse, error) {
+func (c *Client) ListStashes(ctx context.Context) (*ListStashesResponse, error) {
 	path := "/api/v1/stashes"
-	req, err := c.newRequest(ctx, "GET", path, nil)
-	if err != nil {
-		return nil, err
-	}
-	q := req.URL.Query()
-	q.Add("limit", fmt.Sprintf("%d", limit))
-	q.Add("offset", fmt.Sprintf("%d", offset))
-	req.URL.RawQuery = q.Encode()
-
-	resp, err := c.client.Do(req)
+	resp, err := c.get(ctx, path)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +62,7 @@ func (c *Client) ListStashes(ctx context.Context, limit, offset uint) (*ListStas
 		return nil, jsonutil.ForgeError(resp.Body)
 	}
 
-	listStashResponse, err := jsonutil.Read[ListStashResponse](resp.Body)
+	listStashResponse, err := jsonutil.Read[ListStashesResponse](resp.Body)
 	return &listStashResponse, err
 }
 
@@ -244,4 +236,21 @@ func (c *Client) RemoveStashMember(ctx context.Context, stashID, userID string) 
 		return jsonutil.ForgeError(resp.Body)
 	}
 	return nil
+}
+
+func (c *Client) GetStashByName(
+	ctx context.Context,
+	maintainerID, name string,
+) (*StashResponse, error) {
+	path := fmt.Sprintf("/api/v1/stashes/by-name/%s/%s", maintainerID, name)
+	resp, err := c.get(ctx, path)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, jsonutil.ForgeError(resp.Body)
+	}
+	stashResponse, err := jsonutil.Read[StashResponse](resp.Body)
+	return &stashResponse, err
 }
