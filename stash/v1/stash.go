@@ -34,6 +34,7 @@ type StashClient interface {
 	GetStashMembers(ctx context.Context, stashID string) (*ListStashMemberResponse, error)
 	AddStashMember(ctx context.Context, stashID, userID string) error
 	RemoveStashMember(ctx context.Context, stashID, userID string) error
+	GetStashMember(ctx context.Context, stashID, userID string) (*StashMemberResponse, error)
 }
 
 var _ StashClient = (*Client)(nil)
@@ -253,4 +254,21 @@ func (c *Client) GetStashByName(
 	}
 	stashResponse, err := jsonutil.Read[StashResponse](resp.Body)
 	return &stashResponse, err
+}
+
+func (c *Client) GetStashMember(
+	ctx context.Context,
+	stashID, userID string,
+) (*StashMemberResponse, error) {
+	path := fmt.Sprintf("/api/v1/stashes/%s/members/%s", stashID, userID)
+	resp, err := c.get(ctx, path)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, jsonutil.ForgeError(resp.Body)
+	}
+	stashMemberResponse, err := jsonutil.Read[StashMemberResponse](resp.Body)
+	return &stashMemberResponse, err
 }
