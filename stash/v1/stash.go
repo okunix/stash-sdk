@@ -176,7 +176,7 @@ func (c *Client) AddSecretsEntry(
 		return err
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusCreated {
 		return jsonutil.ForgeError(resp.Body)
 	}
 	return nil
