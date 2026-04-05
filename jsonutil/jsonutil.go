@@ -18,7 +18,7 @@ type Message struct {
 	Detail  any    `json:"detail"`
 }
 
-type ValidationProblems map[string]interface{}
+type ValidationProblems map[string]any
 
 func (p ValidationProblems) Error() string {
 	errJson, _ := json.Marshal(p)
@@ -32,7 +32,7 @@ func ForgeError(r io.Reader) error {
 		return errors.New(errMsg)
 	}
 	if msg.Message == "Validation Error" && msg.Detail != nil {
-		return msg.Detail.(ValidationProblems)
+		return ValidationProblems(msg.Detail.(map[string]any))
 	}
 	if msg.Detail != nil {
 		errMsg = msg.Detail.(string)
