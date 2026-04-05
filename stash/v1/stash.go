@@ -17,7 +17,7 @@ type StashClient interface {
 	ListStashes(ctx context.Context) (*ListStashesResponse, error)
 	DeleteStash(ctx context.Context, stashID string) error
 	CreateStash(ctx context.Context, request CreateStashRequest) error
-	UpdateStash(ctx context.Context, request UpdateStashRequest) error
+	UpdateStash(ctx context.Context, stashID string, request UpdateStashRequest) error
 
 	Lock(ctx context.Context, stashID string) error
 	Unlock(ctx context.Context, stashID, password string) error
@@ -95,8 +95,12 @@ func (c *Client) CreateStash(ctx context.Context, request CreateStashRequest) er
 	return nil
 }
 
-func (c *Client) UpdateStash(ctx context.Context, request UpdateStashRequest) error {
-	path := "/api/v1/stashes"
+func (c *Client) UpdateStash(
+	ctx context.Context,
+	stashID string,
+	request UpdateStashRequest,
+) error {
+	path := "/api/v1/stashes/" + stashID
 	body := bytes.NewBuffer([]byte{})
 	json.NewEncoder(body).Encode(request)
 	resp, err := c.patch(ctx, path, body)
