@@ -23,7 +23,9 @@ type UserClient interface {
 var _ UserClient = (*Client)(nil)
 
 func (c *Client) GetToken(ctx context.Context, request GetTokenRequest) (*GetTokenResponse, error) {
-	resp, err := c.get(ctx, "/api/v1/auth/login")
+	path := "/api/v1/auth/login"
+	jsonbody, _ := json.Marshal(request)
+	resp, err := c.post(ctx, path, bytes.NewReader(jsonbody))
 	if err != nil {
 		return nil, err
 	}
